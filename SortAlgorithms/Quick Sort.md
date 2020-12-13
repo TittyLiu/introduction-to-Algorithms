@@ -335,4 +335,441 @@
        After sort:   [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
        ```
 
+5. 原地排序的快速排序算法（我们平时生活中真正使用的算法）
+
+   - 上面的快速排序算法有助于我们理解算法工作流程，但是效率却并不高     
+
+     - 现在我们开始用伪代码整理一下快速排序思路
+
+       ```
+       QuickSort( double[] a )
+          {
+             if ( a.length ≤ 1 )
+                return;    // 长度小于1，不需要排序             
        
+             Select a pivot;  //选择一个元素作为数组分割的界限
+       
+             分割数组 a[] 为左右两部分:
+                left[]: 左半部分所有的元素都小于 等于  pivot
+       	       right[]: 右半部分所有的元素都 大于 pivot;
+       
+             Sort left[];
+             Sort right[];
+       
+             连接: left[] pivot right[]
+          }
+       ```
+
+     - 在上面的简化版的中
+
+     - ```
+       我们新建了两个数组 lefr[] 和 right[](这两个数组包含原始数组的一部分元素)
+             
+       接着，我们吧这俩个数组用其他排序方法进行排序
+             
+       ```
+
+   - 通过对分割数组效率会更高
+
+     - 更好的方式是通过传递子数组去排序
+
+       ```
+       1、使用原始数组，这样的话可以减少拷贝带来的时间和空间开销
+       
+       2、通过传递数组时，指定数组的排序范围，即传递范围形参给函数，比如
+       
+        sort( a, from, to )    意思是:
+       
+              只排序从from到to的范围内的元素 
+              
+              a[from], a[from+1], ..... , a[to-1]
+       ```
+
+     - 就地快速排序
+
+       ```
+       1、快速排序算法只对输入的数组进行排序
+       
+       2、因此，其被称为：就地快速排序
+       ```
+
+6. 就地快速排序算法的步骤
+
+   - 一开始，我们先使用伪代码
+
+     ```
+     QuickSort( double[] a )
+        {
+           if ( a.length ≤ 1 )
+              return;    // 长度小于1，不需要排序             
+     
+           Select a pivot;  //选择一个元素作为数组分割的界限
+     
+           分割数组 a[] 为左右两部分:
+              left[]: 左半部分所有的元素都小于 等于  pivot
+     	       right[]: 右半部分所有的元素都 大于 pivot;
+     
+           Sort left[];
+           Sort right[];
+     
+           连接: left[] pivot right[]
+        }
+     ```
+
+   - 唯一的区别在于
+
+     ```
+     在排序过程中，我们每一次排序的对象是原始数组（这意味着我们所有的操作都是在原始数组上进行，即原地操作）
+     ```
+
+   - Java 代码
+
+     ```
+     /* ========================================================
+             Sort:  a[iLeft] a[iLeft+1] .... a[iRight-1]
+     	======================================================== */
+     
+          void  QuickSort( double[] a, int iLeft, int iRight )
+          {
+             if ( iRight - iLeft ≤ 1 )
+     	{
+     	   // 数组长度为空或者为1的数组不需要排序，直接return
+     	   return;
+             }
+     
+             k = partition( a, iLeft, iRight );
+                    // 返回分完区后的piviot的位置的数组
+     
+     	QuickSort( a, iLeft, k );   // 对分完区后的左半部分进行排序
+     	QucikSort( a, k+1, iRight); // 对分完区后的右半部分进行排序
+     
+             // 现在连接操作已经不需要啦 !!!
+             // 不需要再连接两个有序的数组，因为排序操作在数组内部进行!!!
+          }
+     ```
+
+   - **Note：** 调用分区函数partition(a,left,right) 如下列调用所示：
+
+     ```
+     1、调用函数 partition(a, iLeft, iRight) 将会对下列数组元素进行票分区:
+               a[iLeft] a[iLeft+1]  ..... a[iRight-1]     
+        
+        通过选择 pivot = a[iRight - 1],然后将数组划分为两部分：
+             a、左半部分所有元素都小于等于 pivot
+             b、右半部分所有元素都大于 pivot
+             
+      2、partition()函数必须使用原始数组
+     ```
+
+       Example 1
+
+     ​            ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition01.gif)   
+
+   ​         Example 2
+
+   ​        ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition02.gif)
+
+      
+
+   - 现在我们一起来看下原地排序的算法操作
+
+     - Input array：
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick10.gif)
+
+     -   为了对数组排序，我们调用QuickSort(a,0,8) **注意，我们的iRight是8**
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick11.gif)
+
+     - QuickSort(a, 0 ,8)将会首先分割数组
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick12.gif)
+
+     ​       **Notice: partition函数将会改变输入数组**
+
+     - 当partition( a , 0 , 8)函数执行完毕后，函数返回索引 3（**即pivot的位置**）
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick12a.gif)
+
+     ​        **Notice: 现在输入数组已经原地改变啦！！！**
+
+     -  QuickSort(a , 0 , 8) 将会调用QuickSort(a , 0 ,3) 去对left() 数组进行排序
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick13.gif)
+
+     -   QuickSort(a, 0 ,3)首先对数组进行分割
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick14.gif)            
+
+     ​      Partition(a ,0 ,3)将会返回 索引**1（即pivot的位置）**
+
+     - QuickSort(a, 0 ,3)将会调用**QuickSort(a, 0 ,1)**对左边的子数组进行排序
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick15.gif)
+
+       因为数组只用一个元素，QuickSort(a , 0 , 1)将会立刻返回
+
+     - QuickSort(a , 0 ,3)下一步将会调用**QuickSort(a ,2(=k+1), 3 )**对右边的子数组进行排序
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick16.gif)
+
+        因为数组只有一个元素，**QuickSort(a, 2, 3)**将会立刻返回
+
+     - 执行到这一步，程序将返回到**QuickSort(a ,0 , 3)**, 因为其方法已经执行完毕！！！
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick17.gif)
+
+     - 我们返回到**QuickSort(a , 0 ,8)**, 此时，输入数组看起来像这样
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick18.gif)
+
+       此时，**QuickSort(a , 0 ,8)**将会调用 **QuickSort(a, 4(=k+1), 8)**对右子数组进行排序
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/quick19.gif)
+
+     - 程序将会循环的对右子数组进行排序（此处就省略........）
+
+   - 下面打印出来，原地排序算法的实际执行过程
+
+     ```
+     Before sort:  [6.4, 2.5, 9.2, 3.5, 8.9, 1.1, 7.5, 4.2]
+     
+            **QuickSort(a, 0, 8)**
+            Input: [6.4, 2.5, 9.2, 3.5, 8.9, 1.1, 7.5, 4.2]
+            a[] = [6.4, 2.5, 9.2, 3.5, 8.9, 1.1, 7.5, 4.2]
+            Pivot = 4.2
+            After partition: [1.1, 3.5, 2.5, 4.2, 9.2, 8.9, 6.4, 7.5]
+                   **QuickSort(a, 0, 3)**
+                   Input: [1.1, 3.5, 2.5]
+                   a[] =  [1.1, 3.5, 2.5, 4.2, 9.2, 8.9, 6.4, 7.5]
+                   Pivot = 2.5
+                   After partition: [1.1, 2.5, 3.5, 4.2, 9.2, 8.9, 6.4, 7.5]
+     	             **QuickSort(a, 0, 1)**
+                          Input: [1.1]
+                          a[] =  [1.1, 2.5, 3.5, 4.2, 9.2, 8.9, 6.4, 7.5]
+                          Done. (**QuickSort(a, 0, 1)**)
+     		     **QuickSort(a, 2, 3)**
+                          Input: [3.5]
+                          a[] =  [1.1, 2.5, 3.5, 4.2, 9.2, 8.9, 6.4, 7.5]
+                          Done. (**QuickSort(a, 2, 3)**)
+                   [1.1]
+                   [3.5]
+                   Concatented pieces = [1.1, 2.5, 3.5]
+                   a[] = [1.1, 2.5, 3.5, 4.2, 9.2, 8.9, 6.4, 7.5]
+     	      Done. (**QuickSort(a, 0, 3)**)
+     
+     	      **QuickSort(a, 4, 8)**
+                   Input: [9.2, 8.9, 6.4, 7.5]
+                   a[] = [1.1, 2.5, 3.5, 4.2, 9.2, 8.9, 6.4, 7.5]
+                   Pivot = 7.5
+                   After partition: [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+                          Input: [6.4]
+                          a[] = [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+                          Done.
+                          Input: [8.9, 9.2]
+                          a[] = [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+                          Pivot = 9.2
+                          After partition: [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+                                 Input: [8.9]
+                                 a[] = [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+                                 Done.
+                                 Input: []
+                                 a[] = [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+                                 Done.
+                          [8.9]
+                          []
+                          Concatented pieces = [8.9, 9.2]
+                          a[] = [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+                   [6.4]
+                   [8.9, 9.2]
+                   Concatented pieces = [6.4, 7.5, 8.9, 9.2]
+                   a[] = [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+            [1.1, 2.5, 3.5]
+            [6.4, 7.5, 8.9, 9.2]
+            Concatented pieces = [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+            a[] = [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+     
+     After sort:   [1.1, 2.5, 3.5, 4.2, 6.4, 7.5, 8.9, 9.2]
+     ```
+
+7. 现在我们首先来看看快速排序只的 **原地分割**的算法
+
+   - 接下来，我将会用图示的方式一步一步讲解原地分割算法
+
+     ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition03.gif)
+
+   - 算法描述
+
+     - 首先在数组中，维护三个区间，如下图所示
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition03a.gif)
+
+     - **segment1**中是所有 小于等于 **pivot**的元素
+
+     - **segment2**是所有 大于 **piovt**的元素
+
+     - **segment3**中是不需要处理的元素
+
+     - **segmet2 与 segment3**之间是一个空的插槽
+
+     - 算法工作流如下所示
+
+       - 如果 **a[ larger_I -1 ] > pivot **，则添加 **a[larger_I - 1]**到segment2
+
+       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition03b.gif)
+       -  如果**a [ larger_I - 1] <= pivot**，则添加 **a[larger_I - 1] ** 到segment1
+
+         ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition03c.gif)       
+
+8. 原地分割算法的执行
+
+   ``` Int  partition ( double [] a  , int iLeft , int iRight) {
+         1、保存**piovt**到辅助变量中
+   
+              piovt = a[iRight - 1];
+   
+   Notice : 我们在数组中留了一个插槽    
+   ```
+
+   ![ ](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition04.gif)
+
+         ```
+   2、设置两个索引去分割**segment**
+   
+              Smaller_I = Left;
+   
+               Larger_I = bright - 1;
+   
+   Notice : 我们在数组中留了一个插槽
+         ```
+
+   ​      ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition05.gif)    
+
+   
+
+       ```
+   3、 while( larger_I > smaller_I ) 
+   
+     {
+       ```
+
+   ​      ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition03a.gif)
+
+       ```
+      If( a[ larger_i - 1 ] > pivot )
+   
+      {
+   
+       /*===============================================
+     
+      把a[larger_I - 1] 放入segment 2 并且减小  larget_I的值 
+   
+      ================================================*/
+   
+         a [ larger_I ] = a [ larger_I - 1];
+   
+         larget_I--;
+       ```
+
+   
+
+   ​       ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition03b.gif)
+
+     
+
+   ```
+      }
+      else
+      {
+   /* ==================================================
+   	     把 a[larger_I -1] 放入 Segment 1 并且移动 hole 到后一个
+   	 ================================================== */
+                      help = a[larger_I -1];
+                      a[larger_I -1] = a[smaller_I];
+                      a[smaller_I] = help;
+                      smaller_I++；
+   ```
+
+      ![](https://raw.githubusercontent.com/TittyLiu/staticResource/master/images/sortImages/quickSort/partition03c.gif)
+
+   ```
+      }
+   }
+   4. 把pivot放到合适的地方 
+   
+   	     a[larger_I] = pivot;
+   
+   5. 返回 pivot 在数组中的索引值
+   
+            return (larger_I);
+       }
+   ```
+
+9. partition方法的Java实现
+
+   ```
+      public static int partition( double[] a, int iLeft, int iRight )
+      {
+         double   pivot;
+         double   help;
+         int      smaller_I, larger_I;
+   
+         smaller_I = iLeft;
+         larger_I	= iRight-1;
+         pivot = a[iRight-1];     // 初始化插槽位置为 a[iRight-1]
+   
+         while ( larger_I > smaller_I )
+         {
+          	 if ( a[larger_I -1] > pivot )
+   	 {  /* ==================================================
+      
+            把a[larger_I - 1] 放入segment 2 并且减小  larget_I的值 
+   
+   	       ================================================== */        
+               a[larger_I] = a[larger_I -1];
+               larger_I--;
+   	 }
+            else
+            {
+               /* =================================================
+                  a[larger_I -1] <= pivot, 索引:
+            	  交换 a[smaller_I] 和 a[larger_I -1] 并且 把 smaller_I 向前移动 
+                  ================================================= */
+                help = a[larger_I -1];
+                a[larger_I -1] = a[smaller_I];
+                a[smaller_I] = help;
+                smaller_I++;
+            }
+         }
+   
+         a[larger_I] = pivot;   // 把pivot 放入插槽 
+   
+         return larger_I;
+      }
+   ```
+
+10. 现在在原地快速排序算法中使用原地分区算法的：
+
+    ```
+    /* ========================================================
+            Sort:  a[iLeft] a[iLeft+1] .... a[iRight-1]
+    	======================================================== */
+    
+         void  QuickSort( double[] a, int iLeft, int iRight )
+         {
+            if ( iRight - iLeft ≤ 1 )
+    	{
+    	   //当数组长度小于等于1时 ，直接return
+    	   return;
+            }
+    
+            k = partition( a, iLeft, iRight );
+           // 在分割完数组后 返回 pivot 的位置 
+    
+        	QuickSort( a, iLeft, k );   // 对子子数组进行排序
+    	    QucikSort( a, k+1, iRight); // 对右子数组进行排序
+         }
+    ```
+
+    
+
